@@ -57,22 +57,22 @@ module "argocd" {
   eks_oidc_provider_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}"
   vpc_id                = data.aws_eks_cluster.this.vpc_config[0].vpc_id
 
-  # argocd_config = {
-  #   enable  = true
-  #   version = "7.8.13"
-  # }
-
   argocd_config = {
     enable  = true
     version = "7.8.13"
-
-    helm_release_set_values = [
-      {
-        name  = "server.ingress.hosts[0]"
-        value = "argocd-poc.${var.domain_name}"
-      }
-    ]
   }
+
+  # argocd_config = {
+  #   enable  = true
+  #   version = "7.8.13"
+
+  #   helm_release_set_values = [
+  #     {
+  #       name  = "server.ingress.hosts[0]"
+  #       value = "argocd-poc.${var.domain_name}"
+  #     }
+  #   ]
+  # }
   ha_config = {
     enable = false
   }
