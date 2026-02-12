@@ -15,21 +15,29 @@ resource "helm_release" "argocd" {
   wait             = var.argocd_config.wait
   atomic           = var.argocd_config.atomic
   cleanup_on_fail  = var.argocd_config.cleanup_on_fail
-  values = var.argocd_config.helm_release_values
+  values = concat(
+    var.argocd_config.helm_release_values,
+    var.ingress_config.enable && var.ingress_config.host != "" ? [
+      yamlencode({
+        server = {
+          ingress = {
+            enabled = true
+            ingressClassName = var.ingress_config.ingress_class_name
+            hostname = var.ingress_config.host
+          }
+        }
+      })
+    ] : []
+  )
 
   set = concat(
-    local.merged_set_values,
     [
       for k, v in(var.ingress_config.enable ? local.ingress_annotations : {}) : {
         name  = "server.ingress.annotations.${replace(k, ".", "\\.")}"
         value = v
       }
     ],
-    var.ingress_config.enable && var.ingress_config.host != "" ? [{
-      name  = "server.ingress.hosts[0]"
-      # value = var.ingress_config.host
-      value = tostring(var.ingress_config.host)
-    }] : []
+    local.merged_set_values
   )
 
   ## Note: depends_on with count-conditional resources is safe in Terraform.

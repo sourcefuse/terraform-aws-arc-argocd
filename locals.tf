@@ -53,7 +53,6 @@ locals {
   ingress_values = var.ingress_config.enable ? {
     "server.ingress.enabled"          = "true"
     "server.ingress.ingressClassName" = var.ingress_config.ingress_class_name
-    "server.ingress.https"            = "true"
   } : {}
 
   ################################################################################
