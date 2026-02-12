@@ -5,3 +5,5 @@ terraform.tfvars
 *.backup
 .idea
 .external_momdules
+.claude
+.DS_Store
