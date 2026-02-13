@@ -38,8 +38,15 @@ locals {
     "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
     "alb.ingress.kubernetes.io/target-type"      = "ip"
     "alb.ingress.kubernetes.io/listen-ports"     = "[{\"HTTPS\":443}]"
-    "alb.ingress.kubernetes.io/backend-protocol" = "HTTPS"
+    "alb.ingress.kubernetes.io/backend-protocol" = "HTTP"
+    "alb.ingress.kubernetes.io/healthcheck-path" = "/"
+    "alb.ingress.kubernetes.io/healthcheck-protocol" = "HTTP"
+    "alb.ingress.kubernetes.io/success-codes"    = "200-399"
+    "alb.ingress.kubernetes.io/load-balancer-attributes" = "idle_timeout.timeout_seconds=120"
     },
+    length(var.ingress_config.alb_subnets) > 0 ? {
+      "alb.ingress.kubernetes.io/subnets" = join(",", var.ingress_config.alb_subnets)
+    } : {},
     local.acm_certificate_arn != "" ? {
       "alb.ingress.kubernetes.io/certificate-arn" = local.acm_certificate_arn
     } : {},
@@ -50,10 +57,7 @@ locals {
 
   ingress_annotations = var.ingress_config.enable ? merge(local.default_alb_annotations, var.ingress_config.annotations) : {}
 
-  ingress_values = var.ingress_config.enable ? {
-    "server.ingress.enabled"          = "true"
-    "server.ingress.ingressClassName" = var.ingress_config.ingress_class_name
-  } : {}
+  ingress_values = var.ingress_config.enable ? {} : {}
 
   ################################################################################
   ## SSO Helm values

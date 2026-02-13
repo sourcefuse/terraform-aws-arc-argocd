@@ -24,6 +24,7 @@ resource "helm_release" "argocd" {
             enabled = true
             ingressClassName = var.ingress_config.ingress_class_name
             hostname = var.ingress_config.host
+            annotations = local.ingress_annotations
           }
         }
       })
@@ -31,12 +32,6 @@ resource "helm_release" "argocd" {
   )
 
   set = concat(
-    [
-      for k, v in(var.ingress_config.enable ? local.ingress_annotations : {}) : {
-        name  = "server.ingress.annotations.${replace(k, ".", "\\.")}"
-        value = v
-      }
-    ],
     local.merged_set_values
   )
 

@@ -172,6 +172,7 @@ variable "ingress_config" {
     install_alb_controller     = optional(bool, false)
     auto_create_route53_record = optional(bool, false)
     route53_zone_name          = optional(string, "")
+    alb_subnets                = optional(list(string), [])
   })
 
   default = {}

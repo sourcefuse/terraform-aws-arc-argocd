@@ -57,22 +57,27 @@ module "argocd" {
   eks_oidc_provider_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}"
   vpc_id                = data.aws_eks_cluster.this.vpc_config[0].vpc_id
 
-  argocd_config = {
-    enable  = true
-    version = "7.8.13"
-  }
-
   # argocd_config = {
   #   enable  = true
   #   version = "7.8.13"
-
-  #   helm_release_set_values = [
-  #     {
-  #       name  = "server.ingress.hosts[0]"
-  #       value = "argocd-poc.${var.domain_name}"
-  #     }
-  #   ]
   # }
+
+  argocd_config = {
+    enable  = true
+    version = "7.8.13"
+    
+    helm_release_set_values = [
+      {
+        name  = "configs.cm.url"
+        value = "https://argocd-poc.${var.domain_name}"
+      },
+      {
+        name  = "configs.params.server\\.insecure"
+        value = "true"
+      }
+    ]
+  }
+  
   ha_config = {
     enable = false
   }
@@ -81,11 +86,11 @@ module "argocd" {
     enable                     = true
     host                       = "argocd-poc.${var.domain_name}"
     ingress_class_name         = "alb"
-    acm_certificate_arn = "arn:aws:acm:us-east-1:884360309640:certificate/1485cc03-32c5-44cc-b314-ed30642bac24"
-    # acm_certificate_arn will be auto-discovered from domain
-    install_alb_controller     = true  # Set to false if ALB controller already installed
+    acm_certificate_arn        = "arn:aws:acm:us-east-1:884360309640:certificate/1485cc03-32c5-44cc-b314-ed30642bac24"
+    install_alb_controller     = true
     auto_create_route53_record = true
     route53_zone_name          = var.domain_name
+    alb_subnets                = ["subnet-01efab943d2bbe156", "subnet-0c55ffb1f4a8bd7c2"]
     annotations = {
       "alb.ingress.kubernetes.io/group.name" = "${var.namespace}-${var.environment}"
     }
