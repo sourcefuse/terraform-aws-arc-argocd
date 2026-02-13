@@ -19,7 +19,7 @@ variable "region" {
 variable "eks_cluster_name" {
   description = "Name of the EKS cluster."
   type        = string
-  default = "my-arc-eks-cluster"
+  default = "argocd-poc-cluster"
 }
 
 variable "domain_name" {

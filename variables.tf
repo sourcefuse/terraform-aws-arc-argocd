@@ -169,6 +169,7 @@ variable "ingress_config" {
     annotations                = optional(map(string), {})
     tls_enabled                = optional(bool, true)
     acm_certificate_arn        = optional(string, "")
+    create_acm_certificate     = optional(bool, false)
     install_alb_controller     = optional(bool, false)
     auto_create_route53_record = optional(bool, false)
     route53_zone_name          = optional(string, "")

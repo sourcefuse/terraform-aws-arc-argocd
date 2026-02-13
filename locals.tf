@@ -37,7 +37,8 @@ locals {
   default_alb_annotations = var.ingress_config.enable ? merge({
     "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
     "alb.ingress.kubernetes.io/target-type"      = "ip"
-    "alb.ingress.kubernetes.io/listen-ports"     = "[{\"HTTPS\":443}]"
+    "alb.ingress.kubernetes.io/listen-ports"     = "[{\"HTTP\":80},{\"HTTPS\":443}]"
+    "alb.ingress.kubernetes.io/ssl-redirect"     = "443"
     "alb.ingress.kubernetes.io/backend-protocol" = "HTTP"
     "alb.ingress.kubernetes.io/healthcheck-path" = "/"
     "alb.ingress.kubernetes.io/healthcheck-protocol" = "HTTP"
@@ -49,9 +50,6 @@ locals {
     } : {},
     local.acm_certificate_arn != "" ? {
       "alb.ingress.kubernetes.io/certificate-arn" = local.acm_certificate_arn
-    } : {},
-    var.ingress_config.tls_enabled ? {
-      "alb.ingress.kubernetes.io/ssl-redirect" = "443"
     } : {}
   ) : {}
 

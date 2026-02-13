@@ -69,7 +69,7 @@ module "argocd" {
     helm_release_set_values = [
       {
         name  = "configs.cm.url"
-        value = "https://argocd-poc.${var.domain_name}"
+        value = "https://argocd.${var.domain_name}"
       },
       {
         name  = "configs.params.server\\.insecure"
@@ -84,9 +84,9 @@ module "argocd" {
 
   ingress_config = {
     enable                     = true
-    host                       = "argocd-poc.${var.domain_name}"
+    host                       = "argocd.${var.domain_name}"
     ingress_class_name         = "alb"
-    acm_certificate_arn        = "arn:aws:acm:us-east-1:884360309640:certificate/1485cc03-32c5-44cc-b314-ed30642bac24"
+    create_acm_certificate     = true  # Create new certificate instead of using existing
     install_alb_controller     = true
     auto_create_route53_record = true
     route53_zone_name          = var.domain_name
