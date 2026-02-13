@@ -1,4 +1,4 @@
-![Module Structure](./static/banner.png)
+![Module Structure](./static/argocd-banner.png)
 
 # [terraform-aws-arc-argocd](https://github.com/sourcefuse/terraform-aws-arc-argocd)
 

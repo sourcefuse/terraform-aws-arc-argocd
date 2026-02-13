@@ -57,8 +57,7 @@ data "aws_eks_cluster_auth" "this" {
 ################################################################################
 
 module "argocd" {
-  # source = "sourcefuse/arc-argocd/aws"
-  source = "../../" ## for local development
+  source = "../../"
 
   namespace   = var.namespace
   environment = var.environment
