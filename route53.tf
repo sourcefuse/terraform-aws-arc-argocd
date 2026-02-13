@@ -42,9 +42,8 @@ resource "aws_route53_record" "argocd" {
   }
 
   depends_on = [helm_release.argocd]
-  
+
   lifecycle {
     ignore_changes = [alias[0].name]
   }
 }
-

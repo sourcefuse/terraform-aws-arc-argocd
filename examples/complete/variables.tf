@@ -19,19 +19,13 @@ variable "region" {
 variable "eks_cluster_name" {
   description = "Name of the EKS cluster."
   type        = string
-  default = "argocd-poc-cluster"
+  default     = "argocd-poc-cluster"
 }
 
 variable "domain_name" {
   description = "Domain name for ArgoCD ingress."
   type        = string
   default     = "arc-poc.link"
-}
-
-variable "acm_certificate_arn" {
-  description = "ACM certificate ARN for HTTPS."
-  type        = string
-  default     = ""
 }
 
 variable "tags" {

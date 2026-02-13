@@ -78,29 +78,19 @@ resource "helm_release" "alb_controller" {
   chart      = "aws-load-balancer-controller"
   version    = "1.7.1"
 
-  set = concat([
-    {
-      name  = "clusterName"
-      value = var.eks_cluster_name
-    },
-    {
-      name  = "serviceAccount.create"
-      value = "true"
-    },
-    {
-      name  = "serviceAccount.name"
-      value = "aws-load-balancer-controller"
-    },
-    {
-      name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-      value = aws_iam_role.alb_controller[0].arn
-    }
-    ],
-    var.vpc_id != "" ? [{
-      name  = "vpcId"
-      value = var.vpc_id
-    }] : []
-  )
+  values = [
+    yamlencode({
+      clusterName = var.eks_cluster_name
+      serviceAccount = {
+        create = true
+        name   = "aws-load-balancer-controller"
+        annotations = {
+          "eks.amazonaws.com/role-arn" = aws_iam_role.alb_controller[0].arn
+        }
+      }
+      vpcId = var.vpc_id != "" ? var.vpc_id : null
+    })
+  ]
 
   depends_on = [
     aws_iam_role_policy_attachment.alb_controller

@@ -1,3 +1,22 @@
+terraform {
+  required_version = ">= 1.6.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 5.0.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = ">= 2.24.0"
+    }
+    helm = {
+      source  = "hashicorp/helm"
+      version = ">= 2.12.1"
+    }
+  }
+}
+
 ################################################################################
 ## Providers
 ################################################################################
@@ -12,13 +31,6 @@ provider "kubernetes" {
   token                  = data.aws_eks_cluster_auth.this.token
 }
 
-# provider "helm" {
-#   kubernetes {
-#     host                   = data.aws_eks_cluster.this.endpoint
-#     cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
-#     token                  = data.aws_eks_cluster_auth.this.token
-#   }
-# }
 provider "helm" {
   kubernetes = {
     host                   = data.aws_eks_cluster.this.endpoint
@@ -46,7 +58,7 @@ data "aws_eks_cluster_auth" "this" {
 
 module "argocd" {
   # source = "sourcefuse/arc-argocd/aws"
-  source = "../../"  ## for local development
+  source = "../../" ## for local development
 
   namespace   = var.namespace
   environment = var.environment
@@ -65,7 +77,7 @@ module "argocd" {
   argocd_config = {
     enable  = true
     version = "7.8.13"
-    
+
     helm_release_set_values = [
       {
         name  = "configs.cm.url"
@@ -77,7 +89,7 @@ module "argocd" {
       }
     ]
   }
-  
+
   ha_config = {
     enable = false
   }
@@ -86,11 +98,11 @@ module "argocd" {
     enable                     = true
     host                       = "argocd.${var.domain_name}"
     ingress_class_name         = "alb"
-    create_acm_certificate     = true  # Create new certificate instead of using existing
+    create_acm_certificate     = true # Create new certificate instead of using existing
     install_alb_controller     = true
     auto_create_route53_record = true
     route53_zone_name          = var.domain_name
-    alb_subnets                = ["subnet-01efab943d2bbe156", "subnet-0c55ffb1f4a8bd7c2"]
+    alb_subnets                = ["subnet-01efxxxxxxx", "subnet-0c55ffxxxxxx"]
     annotations = {
       "alb.ingress.kubernetes.io/group.name" = "${var.namespace}-${var.environment}"
     }

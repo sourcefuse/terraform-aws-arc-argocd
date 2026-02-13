@@ -35,14 +35,14 @@ locals {
   ################################################################################
 
   default_alb_annotations = var.ingress_config.enable ? merge({
-    "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
-    "alb.ingress.kubernetes.io/target-type"      = "ip"
-    "alb.ingress.kubernetes.io/listen-ports"     = "[{\"HTTP\":80},{\"HTTPS\":443}]"
-    "alb.ingress.kubernetes.io/ssl-redirect"     = "443"
-    "alb.ingress.kubernetes.io/backend-protocol" = "HTTP"
-    "alb.ingress.kubernetes.io/healthcheck-path" = "/"
-    "alb.ingress.kubernetes.io/healthcheck-protocol" = "HTTP"
-    "alb.ingress.kubernetes.io/success-codes"    = "200-399"
+    "alb.ingress.kubernetes.io/scheme"                   = "internet-facing"
+    "alb.ingress.kubernetes.io/target-type"              = "ip"
+    "alb.ingress.kubernetes.io/listen-ports"             = "[{\"HTTP\":80},{\"HTTPS\":443}]"
+    "alb.ingress.kubernetes.io/ssl-redirect"             = "443"
+    "alb.ingress.kubernetes.io/backend-protocol"         = "HTTP"
+    "alb.ingress.kubernetes.io/healthcheck-path"         = "/"
+    "alb.ingress.kubernetes.io/healthcheck-protocol"     = "HTTP"
+    "alb.ingress.kubernetes.io/success-codes"            = "200-399"
     "alb.ingress.kubernetes.io/load-balancer-attributes" = "idle_timeout.timeout_seconds=120"
     },
     length(var.ingress_config.alb_subnets) > 0 ? {
@@ -112,7 +112,7 @@ locals {
       local.applicationset_values,
       local.admin_values,
       local.irsa_values,
-    ) : {
+      ) : {
       name  = k
       value = v
     }
