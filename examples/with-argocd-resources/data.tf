@@ -2,8 +2,6 @@
 ## Data Sources
 ################################################################################
 
-data "aws_caller_identity" "current" {}
-
 data "aws_vpc" "this" {
   filter {
     name   = "tag:Name"
@@ -23,20 +21,10 @@ data "aws_subnets" "public" {
   }
 }
 
-data "aws_subnets" "private" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.this.id]
-  }
-
-  filter {
-    name   = "tag:Type"
-    values = ["private"]
-  }
+data "aws_eks_cluster" "this" {
+  name = var.eks_cluster_name
 }
 
-data "aws_eks_cluster" "this" {
-  name = module.eks.name
-
-  depends_on = [module.eks]
+data "aws_eks_cluster_auth" "this" {
+  name = var.eks_cluster_name
 }

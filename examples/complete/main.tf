@@ -4,7 +4,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 5.0.0"
+      version = ">= 5.0, < 7.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
@@ -62,11 +62,7 @@ module "argocd" {
   namespace   = var.namespace
   environment = var.environment
 
-  eks_cluster_name      = var.eks_cluster_name
-  eks_cluster_endpoint  = data.aws_eks_cluster.this.endpoint
-  eks_oidc_provider_url = replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")
-  eks_oidc_provider_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}"
-  vpc_id                = data.aws_eks_cluster.this.vpc_config[0].vpc_id
+  eks_cluster_name = var.eks_cluster_name
 
   # argocd_config = {
   #   enable  = true
@@ -98,10 +94,9 @@ module "argocd" {
     host                       = "argocd.${var.domain_name}"
     ingress_class_name         = "alb"
     create_acm_certificate     = true # Create new certificate instead of using existing
-    install_alb_controller     = true
     auto_create_route53_record = true
     route53_zone_name          = var.domain_name
-    alb_subnets                = ["subnet-01efxxxxxxx", "subnet-0c55ffxxxxxx"]
+    alb_subnets                = data.aws_subnets.public.ids
     annotations = {
       "alb.ingress.kubernetes.io/group.name" = "${var.namespace}-${var.environment}"
     }
@@ -117,9 +112,3 @@ module "argocd" {
 
   tags = var.tags
 }
-
-################################################################################
-## Data Sources
-################################################################################
-
-data "aws_caller_identity" "current" {}

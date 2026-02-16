@@ -11,6 +11,13 @@ locals {
   argocd_namespace = var.argocd_config.namespace
 
   ################################################################################
+  ## EKS OIDC
+  ################################################################################
+
+  eks_oidc_provider_url = replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")
+  eks_oidc_provider_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.eks_oidc_provider_url}"
+
+  ################################################################################
   ## IRSA
   ################################################################################
 
@@ -119,6 +126,56 @@ locals {
   ]
 
   merged_set_values = concat(local.required_set_values, var.argocd_config.helm_release_set_values)
+
+  ## Convert set values to proper nested YAML - handle all paths dynamically
+  set_values_yaml = yamlencode({
+    configs = merge(
+      {
+        cm = {
+          for k, v in {
+            for item in local.merged_set_values :
+            replace(item.name, "configs.cm.", "") => item.value
+            if startswith(item.name, "configs.cm.")
+          } : replace(k, "\\.", ".") => v
+        }
+      },
+      {
+        params = {
+          for k, v in {
+            for item in local.merged_set_values :
+            replace(item.name, "configs.params.", "") => item.value
+            if startswith(item.name, "configs.params.")
+          } : replace(k, "\\.", ".") => v
+        }
+      }
+    )
+    server = {
+      serviceAccount = {
+        annotations = {
+          for k, v in {
+            for item in local.merged_set_values :
+            replace(item.name, "server.serviceAccount.annotations.", "") => item.value
+            if startswith(item.name, "server.serviceAccount.annotations.")
+          } : replace(k, "\\.", ".") => v
+        }
+      }
+    }
+    repoServer = {
+      serviceAccount = {
+        annotations = {
+          for k, v in {
+            for item in local.merged_set_values :
+            replace(item.name, "repoServer.serviceAccount.annotations.", "") => item.value
+            if startswith(item.name, "repoServer.serviceAccount.annotations.")
+          } : replace(k, "\\.", ".") => v
+        }
+      }
+    }
+    applicationSet = {
+      enabled  = try([for item in local.merged_set_values : item.value if item.name == "applicationSet.enabled"][0], null)
+      replicas = try(tonumber([for item in local.merged_set_values : item.value if item.name == "applicationSet.replicas"][0]), null)
+    }
+  })
 
   ################################################################################
   ## ALB Zone ID mapping by region

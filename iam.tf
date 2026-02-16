@@ -11,12 +11,12 @@ data "aws_iam_policy_document" "argocd_assume_role" {
 
     principals {
       type        = "Federated"
-      identifiers = [var.eks_oidc_provider_arn]
+      identifiers = [local.eks_oidc_provider_arn]
     }
 
     condition {
       test     = "StringEquals"
-      variable = "${var.eks_oidc_provider_url}:aud"
+      variable = "${local.eks_oidc_provider_url}:aud"
       values   = ["sts.amazonaws.com"]
     }
   }

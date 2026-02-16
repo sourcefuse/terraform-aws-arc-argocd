@@ -51,6 +51,93 @@ resource "time_sleep" "wait_for_cluster" {
 }
 
 ################################################################################
+## ALB Controller IAM Policy
+################################################################################
+
+data "http" "alb_controller_iam_policy" {
+  url = "https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.7.0/docs/install/iam_policy.json"
+}
+
+resource "aws_iam_policy" "alb_controller" {
+  name        = "${var.namespace}-${var.environment}-alb-controller-policy"
+  description = "IAM policy for AWS Load Balancer Controller"
+  policy      = data.http.alb_controller_iam_policy.response_body
+
+  tags = var.tags
+}
+
+resource "aws_iam_role" "alb_controller" {
+  name = "${var.namespace}-${var.environment}-alb-controller-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}"
+      }
+      Action = "sts:AssumeRoleWithWebIdentity"
+      Condition = {
+        StringEquals = {
+          "${replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:aud" = "sts.amazonaws.com"
+          "${replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
+        }
+      }
+    }]
+  })
+
+  tags = var.tags
+}
+
+resource "aws_iam_role_policy_attachment" "alb_controller" {
+  role       = aws_iam_role.alb_controller.name
+  policy_arn = aws_iam_policy.alb_controller.arn
+}
+
+################################################################################
+## ALB Controller Helm Release
+################################################################################
+
+resource "helm_release" "alb_controller" {
+  name       = "aws-load-balancer-controller"
+  repository = "https://aws.github.io/eks-charts"
+  chart      = "aws-load-balancer-controller"
+  namespace  = "kube-system"
+  version    = "1.10.2"
+
+  set {
+    name  = "clusterName"
+    value = module.eks.name
+  }
+
+  set {
+    name  = "serviceAccount.create"
+    value = "true"
+  }
+
+  set {
+    name  = "serviceAccount.name"
+    value = "aws-load-balancer-controller"
+  }
+
+  set {
+    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = aws_iam_role.alb_controller.arn
+  }
+
+  set {
+    name  = "vpcId"
+    value = data.aws_vpc.this.id
+  }
+
+  depends_on = [
+    module.eks,
+    time_sleep.wait_for_cluster,
+    aws_iam_role_policy_attachment.alb_controller
+  ]
+}
+
+################################################################################
 ## ArgoCD Module
 ################################################################################
 
@@ -60,11 +147,7 @@ module "argocd" {
   namespace   = var.namespace
   environment = var.environment
 
-  eks_cluster_name      = module.eks.name
-  eks_cluster_endpoint  = module.eks.endpoint
-  eks_oidc_provider_url = module.eks.oidc_provider_url
-  eks_oidc_provider_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${module.eks.oidc_provider_url}"
-  vpc_id                = data.aws_vpc.this.id
+  eks_cluster_name = module.eks.name
 
   argocd_config = {
     enable  = true
@@ -92,7 +175,6 @@ module "argocd" {
     ingress_class_name         = "alb"
     create_acm_certificate     = var.create_acm_certificate
     acm_certificate_arn        = var.acm_certificate_arn
-    install_alb_controller     = true
     auto_create_route53_record = var.auto_create_route53_record
     route53_zone_name          = var.domain_name
     alb_subnets                = data.aws_subnets.public.ids
@@ -111,5 +193,5 @@ module "argocd" {
 
   tags = var.tags
 
-  depends_on = [module.eks, time_sleep.wait_for_cluster]
+  depends_on = [module.eks, time_sleep.wait_for_cluster, helm_release.alb_controller]
 }

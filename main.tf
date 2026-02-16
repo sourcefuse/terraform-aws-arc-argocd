@@ -30,12 +30,7 @@ resource "helm_release" "argocd" {
         }
       })
     ] : [],
-    length(local.merged_set_values) > 0 ? [
-      yamlencode({
-        for item in local.merged_set_values :
-        item.name => item.value
-      })
-    ] : []
+    length(local.merged_set_values) > 0 ? [local.set_values_yaml] : []
   )
 
   ## Note: depends_on with count-conditional resources is safe in Terraform.
@@ -46,7 +41,6 @@ resource "helm_release" "argocd" {
     aws_iam_role_policy_attachment.argocd_server,
     aws_iam_role_policy_attachment.argocd_repo_server,
     aws_iam_role_policy_attachment.repo_server_ecr,
-    helm_release.alb_controller,
   ]
 }
 

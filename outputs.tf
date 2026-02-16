@@ -70,3 +70,22 @@ output "acm_certificate_arn" {
   description = "ACM certificate ARN used for ArgoCD ingress."
   value       = var.ingress_config.enable ? local.acm_certificate_arn : null
 }
+
+################################################################################
+## ArgoCD Resources Outputs
+################################################################################
+
+output "repositories" {
+  description = "Map of created ArgoCD repositories."
+  value       = { for k, v in kubectl_manifest.argocd_repository : k => k }
+}
+
+output "projects" {
+  description = "Map of created ArgoCD projects."
+  value       = { for k, v in kubectl_manifest.argocd_project : k => k }
+}
+
+output "applications" {
+  description = "Map of created ArgoCD applications."
+  value       = { for k, v in kubectl_manifest.argocd_application : k => k }
+}

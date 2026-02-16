@@ -27,22 +27,6 @@ variable "eks_cluster_name" {
   type        = string
 }
 
-variable "eks_oidc_provider_url" {
-  description = "The OIDC identity provider URL for the EKS cluster (without https:// prefix)."
-  type        = string
-}
-
-variable "eks_oidc_provider_arn" {
-  description = "ARN of the OIDC identity provider for the EKS cluster."
-  type        = string
-}
-
-variable "vpc_id" {
-  description = "VPC ID where the EKS cluster is deployed. Required for ALB controller."
-  type        = string
-  default     = ""
-}
-
 ################################################################################
 ## ArgoCD Helm Configuration
 ################################################################################
@@ -152,7 +136,6 @@ variable "ingress_config" {
     - `annotations`        : Additional annotations for the ingress resource.
     - `tls_enabled`        : Enable TLS termination.
     - `acm_certificate_arn`: ACM certificate ARN for ALB HTTPS listener.
-    - `install_alb_controller` : Install AWS Load Balancer Controller (default: false). Set to true if not already installed.
     - `auto_create_route53_record` : Automatically create Route53 A record for the ingress.
     - `route53_zone_name`  : Route53 hosted zone name (e.g., example.com) for automatic DNS record creation.
   EOT
@@ -165,7 +148,6 @@ variable "ingress_config" {
     tls_enabled                = optional(bool, true)
     acm_certificate_arn        = optional(string, "")
     create_acm_certificate     = optional(bool, false)
-    install_alb_controller     = optional(bool, false)
     auto_create_route53_record = optional(bool, false)
     route53_zone_name          = optional(string, "")
     alb_subnets                = optional(list(string), [])
@@ -286,6 +268,130 @@ variable "admin_config" {
     disable_admin = optional(bool, false)
     bcrypt_hash   = optional(string, "")
   })
+
+  default = {}
+}
+
+################################################################################
+## ArgoCD Repositories
+################################################################################
+
+variable "repositories" {
+  description = <<-EOT
+    Map of ArgoCD repositories to create.
+
+    Each repository can have:
+    - `url`             : Repository URL (required)
+    - `type`            : Repository type (git, helm) (default: git)
+    - `username`        : Username for authentication
+    - `password`        : Password for authentication
+    - `ssh_private_key` : SSH private key for authentication
+    - `insecure`        : Skip TLS verification
+    - `enable_lfs`      : Enable Git LFS
+  EOT
+
+  type = map(object({
+    url             = string
+    type            = optional(string, "git")
+    username        = optional(string)
+    password        = optional(string)
+    ssh_private_key = optional(string)
+    insecure        = optional(bool)
+    enable_lfs      = optional(bool)
+  }))
+
+  default = {}
+}
+
+################################################################################
+## ArgoCD Projects
+################################################################################
+
+variable "projects" {
+  description = <<-EOT
+    Map of ArgoCD projects to create.
+
+    Each project can have:
+    - `description`                  : Project description
+    - `source_repos`                 : List of allowed source repositories
+    - `destinations`                 : List of allowed destinations
+    - `cluster_resource_whitelist`   : Cluster-scoped resources whitelist
+    - `namespace_resource_whitelist` : Namespace-scoped resources whitelist
+  EOT
+
+  type = map(object({
+    description  = optional(string)
+    source_repos = optional(list(string))
+    destinations = optional(list(object({
+      namespace = string
+      server    = string
+    })))
+    cluster_resource_whitelist = optional(list(object({
+      group = string
+      kind  = string
+    })))
+    namespace_resource_whitelist = optional(list(object({
+      group = string
+      kind  = string
+    })))
+  }))
+
+  default = {}
+}
+
+################################################################################
+## ArgoCD Applications
+################################################################################
+
+variable "applications" {
+  description = <<-EOT
+    Map of ArgoCD applications to create.
+
+    Each application requires:
+    - `repo_url`        : Git repository URL
+    - `target_revision` : Git revision (branch, tag, commit)
+    - `path`            : Path within repository
+    - `project`         : ArgoCD project name
+    - `destination`     : Destination cluster and namespace
+    - `sync_policy`     : Sync policy configuration
+    - `helm`            : Helm-specific configuration
+  EOT
+
+  type = map(object({
+    repo_url        = string
+    target_revision = optional(string, "HEAD")
+    path            = optional(string)
+    project         = optional(string, "default")
+    finalizers      = optional(list(string))
+    destination = optional(object({
+      server    = optional(string, "https://kubernetes.default.svc")
+      namespace = optional(string, "default")
+    }))
+    sync_policy = optional(object({
+      automated = optional(object({
+        prune     = optional(bool, false)
+        self_heal = optional(bool, false)
+      }))
+      sync_options = optional(list(string))
+      retry = optional(object({
+        limit = optional(number, 5)
+        backoff = optional(object({
+          duration     = optional(string, "5s")
+          factor       = optional(number, 2)
+          max_duration = optional(string, "3m")
+        }))
+      }))
+    }))
+    helm = optional(object({
+      release_name = optional(string)
+      values       = optional(string)
+      value_files  = optional(list(string))
+      parameters = optional(list(object({
+        name  = string
+        value = string
+      })))
+    }))
+  }))
 
   default = {}
 }
