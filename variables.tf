@@ -27,11 +27,6 @@ variable "eks_cluster_name" {
   type        = string
 }
 
-variable "eks_cluster_endpoint" {
-  description = "Endpoint URL of the EKS cluster API server."
-  type        = string
-}
-
 variable "eks_oidc_provider_url" {
   description = "The OIDC identity provider URL for the EKS cluster (without https:// prefix)."
   type        = string

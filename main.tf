@@ -15,7 +15,7 @@ resource "helm_release" "argocd" {
   wait             = var.argocd_config.wait
   atomic           = var.argocd_config.atomic
   cleanup_on_fail  = var.argocd_config.cleanup_on_fail
-  
+
   values = concat(
     var.argocd_config.helm_release_values,
     var.ingress_config.enable && var.ingress_config.host != "" ? [
