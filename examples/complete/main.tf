@@ -64,11 +64,6 @@ module "argocd" {
 
   eks_cluster_name = var.eks_cluster_name
 
-  # argocd_config = {
-  #   enable  = true
-  #   version = "7.8.13"
-  # }
-
   argocd_config = {
     enable  = true
     version = "7.8.13"
