@@ -48,7 +48,7 @@ provider "registry.terraform.io/hashicorp/aws" {
 
 provider "registry.terraform.io/hashicorp/helm" {
   version     = "3.1.1"
-  constraints = ">= 2.12.1"
+  constraints = ">= 2.12.1, >= 2.16.0"
   hashes = [
     "h1:47CqNwkxctJtL/N/JuEj+8QMg8mRNI/NWeKO5/ydfZU=",
     "zh:1a6d5ce931708aec29d1f3d9e360c2a0c35ba5a54d03eeaff0ce3ca597cd0275",
