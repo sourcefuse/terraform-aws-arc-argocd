@@ -33,6 +33,53 @@ Deploys ArgoCD on an existing EKS cluster with ALB ingress, ACM certificates, Ro
 - SSO via Dex (GitHub, OIDC, SAML)
 - Repositories, projects, and applications as code
 
+## Overview
+
+SourceFuse AWS Reference Architecture (ARC) Terraform module for deploying and managing ArgoCD on Amazon EKS clusters. This module provides a production-ready ArgoCD installation with comprehensive AWS service integrations, following security and operational best practices.
+
+### Key Features
+
+- **GitOps Continuous Delivery**: Declarative application deployment and lifecycle management
+- **AWS Load Balancer Integration**: Automated ALB provisioning with HTTPS termination
+- **Certificate Management**: Automatic ACM certificate creation with DNS validation
+- **DNS Automation**: Route53 record creation and management
+- **Secure AWS Access**: IAM Roles for Service Accounts (IRSA) for pod-level permissions
+- **High Availability**: Multi-replica deployment with Redis HA support
+- **Image Automation**: ArgoCD Image Updater for automated container updates
+- **Multi-Cluster Support**: ApplicationSet controller for managing applications across clusters
+- **Enterprise SSO**: Dex integration for GitHub, OIDC, SAML authentication
+- **Event Notifications**: Integration with Slack, email, and webhook services
+
+## Architecture
+
+The module deploys the following components:
+
+1. **ArgoCD Core Components**
+   - Application Controller: Monitors applications and synchronizes desired state
+   - API Server: Provides API and UI for ArgoCD
+   - Repository Server: Manages Git repository connections and manifests
+   - Redis: Caching layer for improved performance
+
+2. **AWS Infrastructure**
+   - Application Load Balancer (ALB) for external access
+   - ACM Certificate for HTTPS encryption
+   - Route53 DNS records for domain resolution
+   - IAM roles and policies for AWS service access
+
+3. **Optional Components**
+   - ArgoCD Image Updater for automated image updates
+   - Notifications Controller for event-driven alerts
+   - Dex for SSO authentication
+
+## Prerequisites
+
+- Terraform >= 1.6.0
+- AWS CLI configured with appropriate credentials
+- Existing EKS cluster with OIDC provider enabled
+- VPC with public subnets (for internet-facing ALB)
+- Route53 hosted zone (optional, for automatic DNS management)
+
+
 ## Quickstart
 
 ```hcl
