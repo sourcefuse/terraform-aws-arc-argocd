@@ -33,7 +33,7 @@ Deploys ArgoCD on an existing EKS cluster with ALB ingress, ACM certificates, Ro
 - SSO via Dex (GitHub, OIDC, SAML)
 - Repositories, projects, and applications as code
 
-For more information about this repository and its usage, please see [Terraform AWS API ARGOCD Usage Guide](https://github.com/sourcefuse/terraform-aws-arc-argocd/blob/main/docs/module-usage-guide/README.md).
+For more information about this repository and its usage, please see [Terraform AWS ARGOCD Usage Guide](https://github.com/sourcefuse/terraform-aws-arc-argocd/blob/main/docs/module-usage-guide/README.md).
 
 ## Overview
 
