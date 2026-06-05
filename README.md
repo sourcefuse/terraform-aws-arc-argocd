@@ -20,6 +20,10 @@
 
 ## Overview
 
+## Architecture
+
+![Architecture Diagram](./static/arch.png)
+
 Deploys ArgoCD on an existing EKS cluster with ALB ingress, ACM certificates, Route53 DNS, and IRSA.
 
 ## What It Does
