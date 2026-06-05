@@ -54,6 +54,8 @@ SourceFuse AWS Reference Architecture (ARC) Terraform module for deploying and m
 
 ## Architecture
 
+![Architecture Diagram](./static/architecture.png)
+
 The module deploys the following components:
 
 1. **ArgoCD Core Components**
@@ -83,6 +85,7 @@ The module deploys the following components:
 
 
 ## Quickstart
+### External Access (ALB + HTTPS)
 
 ```hcl
 module "argocd" {

@@ -1,0 +1,191 @@
+<svg width="1100" height="800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .box { fill: #fff; stroke: #232F3E; stroke-width: 2; }
+      .aws-box { fill: #FF9900; stroke: #232F3E; stroke-width: 2; }
+      .k8s-box { fill: #326CE5; }
+      .argocd-box { fill: #EF7B4D; }
+      .network-box { fill: #7AA116; }
+      .dns-box { fill: #8C4FFF; }
+      .title-text { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; fill: #232F3E; }
+      .small-text { font-family: Arial, sans-serif; font-size: 11px; fill: #232F3E; }
+      .white-text { fill: #fff; }
+      .arrow { stroke: #232F3E; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .dashed-arrow { stroke: #666; stroke-width: 2; fill: none; stroke-dasharray: 5,5; marker-end: url(#arrowhead-gray); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#232F3E" />
+    </marker>
+    <marker id="arrowhead-gray" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#666" />
+    </marker>
+  </defs>
+  
+  <!-- Title -->
+  <text x="550" y="30" font-family="Arial" font-size="24" font-weight="bold" fill="#232F3E" text-anchor="middle">
+    ArgoCD on EKS Architecture
+  </text>
+  
+  <!-- Route53 -->
+  <g transform="translate(50, 70)">
+    <rect class="dns-box" width="180" height="60" rx="5"/>
+    <text x="90" y="30" class="title-text white-text" text-anchor="middle">Route 53</text>
+    <text x="90" y="48" class="small-text white-text" text-anchor="middle">argocd.example.com</text>
+  </g>
+  
+  <!-- ACM Certificate -->
+  <g transform="translate(270, 70)">
+    <rect class="aws-box" width="180" height="60" rx="5"/>
+    <text x="90" y="30" class="title-text white-text" text-anchor="middle">ACM Certificate</text>
+    <text x="90" y="48" class="small-text white-text" text-anchor="middle">TLS/SSL</text>
+  </g>
+  
+  <!-- Application Load Balancer -->
+  <g transform="translate(470, 70)">
+    <rect class="network-box" width="180" height="60" rx="5"/>
+    <text x="90" y="30" class="title-text white-text" text-anchor="middle">ALB</text>
+    <text x="90" y="48" class="small-text white-text" text-anchor="middle">Ingress Controller</text>
+  </g>
+  
+  <!-- Git Repository -->
+  <g transform="translate(870, 70)">
+    <rect class="box" width="180" height="60" rx="5"/>
+    <text x="90" y="30" class="title-text" text-anchor="middle">Git Repository</text>
+    <text x="90" y="48" class="small-text" text-anchor="middle">Application Manifests</text>
+  </g>
+  
+  <!-- VPC Container -->
+  <rect x="50" y="170" width="1000" height="600" fill="#E8F4F8" stroke="#147EB3" stroke-width="3" rx="5"/>
+  <text x="70" y="195" class="title-text" fill="#147EB3">VPC</text>
+  
+  <!-- EKS Cluster Container -->
+  <rect x="100" y="220" width="900" height="520" fill="#F0F8FF" stroke="#326CE5" stroke-width="3" stroke-dasharray="10,5" rx="5"/>
+  <text x="120" y="245" class="title-text" fill="#326CE5">Amazon EKS Cluster</text>
+  
+  <!-- ArgoCD Namespace -->
+  <rect x="130" y="270" width="840" height="440" fill="#FFF5EB" stroke="#EF7B4D" stroke-width="2" stroke-dasharray="5,5" rx="5"/>
+  <text x="150" y="295" class="title-text" fill="#EF7B4D">Namespace: argocd</text>
+  
+  <!-- ArgoCD Components Row 1 -->
+  <g transform="translate(160, 320)">
+    <rect class="argocd-box" width="160" height="80" rx="5"/>
+    <text x="80" y="25" class="small-text white-text" text-anchor="middle">ArgoCD Server</text>
+    <text x="80" y="42" class="small-text white-text" text-anchor="middle">API &amp; UI</text>
+    <text x="80" y="62" class="small-text white-text" text-anchor="middle">IRSA Role Attached</text>
+  </g>
+  
+  <g transform="translate(360, 320)">
+    <rect class="argocd-box" width="160" height="80" rx="5"/>
+    <text x="80" y="25" class="small-text white-text" text-anchor="middle">Application</text>
+    <text x="80" y="42" class="small-text white-text" text-anchor="middle">Controller</text>
+    <text x="80" y="62" class="small-text white-text" text-anchor="middle">Sync Engine</text>
+  </g>
+  
+  <g transform="translate(560, 320)">
+    <rect class="argocd-box" width="160" height="80" rx="5"/>
+    <text x="80" y="25" class="small-text white-text" text-anchor="middle">Repo Server</text>
+    <text x="80" y="42" class="small-text white-text" text-anchor="middle">Git/Helm Access</text>
+    <text x="80" y="62" class="small-text white-text" text-anchor="middle">IRSA for ECR</text>
+  </g>
+  
+  <g transform="translate(760, 320)">
+    <rect class="argocd-box" width="160" height="80" rx="5"/>
+    <text x="80" y="25" class="small-text white-text" text-anchor="middle">Redis</text>
+    <text x="80" y="42" class="small-text white-text" text-anchor="middle">Cache Layer</text>
+    <text x="80" y="62" class="small-text white-text" text-anchor="middle">HA Enabled</text>
+  </g>
+  
+  <!-- ArgoCD Components Row 2 (Optional) -->
+  <g transform="translate(160, 440)">
+    <rect class="argocd-box" width="160" height="70" rx="5"/>
+    <text x="80" y="25" class="small-text white-text" text-anchor="middle">Dex (SSO)</text>
+    <text x="80" y="42" class="small-text white-text" text-anchor="middle">OAuth/SAML</text>
+    <text x="80" y="58" class="small-text white-text" text-anchor="middle">(Optional)</text>
+  </g>
+  
+  <g transform="translate(360, 440)">
+    <rect class="argocd-box" width="160" height="70" rx="5"/>
+    <text x="80" y="25" class="small-text white-text" text-anchor="middle">Image Updater</text>
+    <text x="80" y="42" class="small-text white-text" text-anchor="middle">Auto Image Update</text>
+    <text x="80" y="58" class="small-text white-text" text-anchor="middle">(Optional)</text>
+  </g>
+  
+  <g transform="translate(560, 440)">
+    <rect class="argocd-box" width="160" height="70" rx="5"/>
+    <text x="80" y="25" class="small-text white-text" text-anchor="middle">Notifications</text>
+    <text x="80" y="42" class="small-text white-text" text-anchor="middle">Alerts &amp; Events</text>
+    <text x="80" y="58" class="small-text white-text" text-anchor="middle">(Optional)</text>
+  </g>
+  
+  <g transform="translate(760, 440)">
+    <rect class="argocd-box" width="160" height="70" rx="5"/>
+    <text x="80" y="25" class="small-text white-text" text-anchor="middle">ApplicationSet</text>
+    <text x="80" y="42" class="small-text white-text" text-anchor="middle">Multi-Cluster</text>
+    <text x="80" y="58" class="small-text white-text" text-anchor="middle">Controller</text>
+  </g>
+  
+  <!-- Managed Applications -->
+  <rect x="160" y="550" width="760" height="130" fill="#E8F5E9" stroke="#7AA116" stroke-width="2" stroke-dasharray="5,5" rx="5"/>
+  <text x="180" y="575" class="title-text" fill="#7AA116">Managed Applications (Other Namespaces)</text>
+  
+  <g transform="translate(200, 595)">
+    <rect class="k8s-box" width="120" height="60" rx="5"/>
+    <text x="60" y="25" class="small-text white-text" text-anchor="middle">Application 1</text>
+    <text x="60" y="42" class="small-text white-text" text-anchor="middle">Deployments</text>
+    <text x="60" y="55" class="small-text white-text" text-anchor="middle">Services</text>
+  </g>
+  
+  <g transform="translate(360, 595)">
+    <rect class="k8s-box" width="120" height="60" rx="5"/>
+    <text x="60" y="25" class="small-text white-text" text-anchor="middle">Application 2</text>
+    <text x="60" y="42" class="small-text white-text" text-anchor="middle">Helm Chart</text>
+    <text x="60" y="55" class="small-text white-text" text-anchor="middle">Resources</text>
+  </g>
+  
+  <g transform="translate(520, 595)">
+    <rect class="k8s-box" width="120" height="60" rx="5"/>
+    <text x="60" y="25" class="small-text white-text" text-anchor="middle">Application N</text>
+    <text x="60" y="42" class="small-text white-text" text-anchor="middle">Kustomize</text>
+    <text x="60" y="55" class="small-text white-text" text-anchor="middle">Resources</text>
+  </g>
+  
+  <!-- IAM Roles for Service Accounts -->
+  <g transform="translate(700, 595)">
+    <rect class="aws-box" width="180" height="60" rx="5"/>
+    <text x="90" y="25" class="small-text white-text" text-anchor="middle">IAM Roles (IRSA)</text>
+    <text x="90" y="42" class="small-text white-text" text-anchor="middle">Least Privilege</text>
+    <text x="90" y="55" class="small-text white-text" text-anchor="middle">AWS Access</text>
+  </g>
+  
+  <!-- Arrows and Connections -->
+  <!-- Route53 to ALB -->
+  <path class="arrow" d="M 140 130 L 470 100"/>
+  
+  <!-- ACM to ALB -->
+  <path class="arrow" d="M 360 130 L 530 130"/>
+  
+  <!-- ALB to ArgoCD Server -->
+  <path class="arrow" d="M 560 130 L 400 220 L 320 320"/>
+  
+  <!-- Git to Repo Server -->
+  <path class="dashed-arrow" d="M 960 130 L 960 220 L 700 320"/>
+  
+  <!-- Repo Server to Controller -->
+  <path class="arrow" d="M 600 380 L 500 380"/>
+  
+  <!-- Controller to Apps -->
+  <path class="arrow" d="M 440 400 L 440 550"/>
+  
+  <!-- IRSA to components -->
+  <path class="dashed-arrow" d="M 790 595 L 790 510"/>
+  
+  <!-- Legend -->
+  <g transform="translate(50, 180)">
+    <text x="0" y="0" class="small-text" font-weight="bold">Key Features:</text>
+    <text x="0" y="16" class="small-text">• GitOps continuous delivery</text>
+    <text x="0" y="32" class="small-text">• HTTPS with ACM certificates</text>
+    <text x="0" y="48" class="small-text">• IRSA for AWS access</text>
+    <text x="0" y="64" class="small-text">• Multi-cluster support</text>
+    <text x="0" y="80" class="small-text">• SSO integration (optional)</text>
+  </g>
+</svg>
