@@ -35,7 +35,7 @@ Deploys ArgoCD on an existing EKS cluster with ALB ingress, ACM certificates, Ro
 
 For more information about this repository and its usage, please see [Terraform AWS ARGOCD Usage Guide](https://github.com/sourcefuse/terraform-aws-arc-argocd/blob/main/docs/module-usage-guide/README.md).
 
-## Overview
+
 
 SourceFuse AWS Reference Architecture (ARC) Terraform module for deploying and managing ArgoCD on Amazon EKS clusters. This module provides a production-ready ArgoCD installation with comprehensive AWS service integrations, following security and operational best practices.
 
