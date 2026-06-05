@@ -56,9 +56,6 @@ SourceFuse AWS Reference Architecture (ARC) Terraform module for deploying and m
 - **Enterprise SSO**: Dex integration for GitHub, OIDC, SAML authentication
 - **Event Notifications**: Integration with Slack, email, and webhook services
 
-## Architecture
-
-![Architecture Diagram](./static/arch.png)
 
 
 The module deploys the following components:
