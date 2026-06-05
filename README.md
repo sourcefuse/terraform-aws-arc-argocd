@@ -54,7 +54,7 @@ SourceFuse AWS Reference Architecture (ARC) Terraform module for deploying and m
 
 ## Architecture
 
-![Architecture Diagram](./static/architecture.png)
+![Architecture Diagram](./static/arch.png)
 
 The module deploys the following components:
 
