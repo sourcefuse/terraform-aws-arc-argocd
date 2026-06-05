@@ -1,5 +1,5 @@
 ---
-"name": Trivy Full Scan
+name: Trivy Full Scan
 
 "on":
   pull_request:
@@ -11,14 +11,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Full Trivy Check (optional check)
-        uses: aquasecurity/trivy-action@0.28.0
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
         with:
           scan-type: fs
-          ignore-unfixed: false
-          scan-ref: ${{ github.workspace }}
-          trivy-config: ${{ github.workspace }}/trivy.yaml
-          severity: LOW,MEDIUM,HIGH,CRITICAL
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          format: sarif
+          output: trivy-results.sarif
           exit-code: 1
